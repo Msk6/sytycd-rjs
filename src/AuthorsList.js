@@ -4,13 +4,13 @@ import React, { useState } from "react";
 import AuthorCard from "./AuthorCard";
 import SearchBar from "./SearchBar";
 
-const AuthorsList = () => {
+const AuthorsList = (props) => {
   const [filteredAuthors, setFilteredAuthors] = useState(props.authors);
 
   const filterAuthors = query => {
-    query = query.toLowerCase();
+    let newQuery = query.toLowerCase();
     let filtered = props.authors.filter(author =>
-      `${author.first_name} ${author.last_name}`.toLowerCase().includes(query)
+      `${author.first_name} ${author.last_name}`.toLowerCase().includes(newQuery)
     );
     setFilteredAuthors(filtered);
   };

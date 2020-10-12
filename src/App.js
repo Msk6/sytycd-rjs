@@ -14,25 +14,26 @@ const instance = axios.create({
 });
 
 const App = () => {
-  const [authors, setAuthors] = useState(null);
+  const [authors, setAuthors] = useState([]);
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchAllAuthors = async () => {
-    const res = await instance.put("/api/authors/");
-    return res.data;
-  };
+  useEffect(() => {
+    setLoading(true);
+    const fetchAllAuthors = async () => {
+      const res = await instance.get("/api/authors/");
+      setAuthors(res.data);
+      setLoading(false);
+    };
+  
+    const fetchAllBooks = async () => {
+      setLoading(true);
+      const res = await instance.get("/api/books/");
+      setBooks(res.data);
+      setLoading(false);
+    };
 
-  const fetchAllBooks = async () => {
-    const res = await instance.get("/-api/books/");
-    return res.data;
-  };
-
-  useEffect(async () => {
     try {
-      const authors = await fetchAllAuthors();
-      const books = await fetchAllBooks();
-
       /**
        * Alternatives: this version would run in parallel!
        */
@@ -40,13 +41,13 @@ const App = () => {
       // const booksReq = fetchAllBooks();
       // const authors = await authorsReq;
       // const books = await booksReq;
-      setBooks(books);
-      setAuthors(authors);
-      setLoading(false);
+      fetchAllAuthors();
+      fetchAllBooks();
+      //setLoading(false);
     } catch (err) {
       console.error(err);
     }
-  });
+  },[]);
 
   const getView = () => {
     if (loading) {
@@ -54,14 +55,13 @@ const App = () => {
     } else {
       return (
         <Switch>
-          <Redirect exact from="/" to="/authors" />
-          <Route path="/authors/:ID">
+          <Redirect exact from="/" to="/authors/" />
+          <Route path="/authors/:authorID">
             <AuthorDetail />
           </Route>
           <Route path="/authors/">
             <AuthorsList authors={authors} />
           </Route>
-
           <Route path="/books/:bookColor?">
             <BookList books={books} />
           </Route>

@@ -13,30 +13,31 @@ const instance = axios.create({
 });
 
 const AuthorDetail = props => {
-  const [author, setAuthor] = useState(null);
+  const [author, setAuthor] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    getAuthor();
-  }, [useParams().authorID]);
+  const {authorID} = useParams();
 
-  const getAuthor = async () => {
-    const authorID = useParams().authorID;
-    setLoading(true);
-    try {
+  useEffect(() => {
+    const getAuthor = async () => {
+      setLoading(true);
       const res = await instance.get(`/api/authors/${authorID}`);
-      const author = res.data;
-      setAuthor(author);
+      setAuthor(res.data);
       setLoading(false);
-    } catch (err) {
-      console.error(err);
+    };
+    try{
+      getAuthor();
+    } catch (error){
+      console.error(error);
     }
-  };
+    
+  }, [authorID]);
+
+  
 
   if (loading) {
     return <Loading />;
   } else {
-    const author = author;
     const authorName = `${author.first_name} ${author.last_name}`;
     return (
       <div className="author">
